@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Paste {
+  id           String   @id @default(cuid())
+  // store as base64 (ciphertext) and base64 (iv/nonce), both not secret
+  ciphertext   String
+  iv           String
+  alg          String   // e.g., "AES-GCM-256"
+  requirePassphrase Boolean   @default(false)
+
+  // UX + controls
+  title        String?  
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime?
+  burnAfterRead Boolean  @default(false)
+  maxReads     Int?      // e.g., null or a positive number
+  reads        Int       @default(0)
+
+  // administration without knowing key
+  deleteTokenHash String? // sha256 of random token
+  // metadata (not secret): size, version, iterations if using PBKDF2, salt, etc.
+  kdf             String?     // e.g. "PBKDF2-SHA256"
+  iterations      Int?        // e.g. 200000
+  salt         String? // if deriving from passphrase; salt isn't secret
+  version      Int      @default(1)
+
+  @@index([expiresAt])
+}
