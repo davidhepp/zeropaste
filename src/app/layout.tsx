@@ -27,7 +27,36 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="min-h-dvh flex flex-col">
+          <header className="sticky top-0 z-10 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b border-black/5 dark:border-white/10">
+            <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+              <a href="/" className="font-semibold tracking-tight">
+                zeropaste
+              </a>
+              <nav className="flex items-center gap-3 text-sm">
+                <a
+                  href="/new"
+                  className="rounded-md px-3 py-1.5 border border-black/10 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 transition"
+                >
+                  New
+                </a>
+                <a
+                  target="_blank"
+                  href="https://github.com/"
+                  className="rounded-md px-3 py-1.5 border border-black/10 dark:border-white/20 hover:bg-black/5 dark:hover:bg-white/5 transition"
+                >
+                  GitHub
+                </a>
+              </nav>
+            </div>
+          </header>
+          <main className="flex-1">{children}</main>
+          <footer className="border-t border-black/5 dark:border-white/10">
+            <div className="max-w-4xl mx-auto px-4 py-6 text-xs text-foreground/60">
+              End-to-end encrypted pastes. Keys never leave your browser.
+            </div>
+          </footer>
+        </div>
       </body>
     </html>
   );

@@ -14,9 +14,12 @@ export default function NewPastePage() {
   const [passphrase, setPassphrase] = useState("");
   const [link, setLink] = useState<string | null>(null);
   const [deleteTokenB64u, setDeleteTokenB64u] = useState<string | null>(null);
+  const [isEncrypting, setIsEncrypting] = useState(false);
+  const [copied, setCopied] = useState<"link" | "token" | null>(null);
 
   async function createPaste() {
     if (!text.trim()) return;
+    setIsEncrypting(true);
 
     let rawKey: Uint8Array;
     let kdf: string | null = null;
@@ -76,62 +79,104 @@ export default function NewPastePage() {
     }
 
     localStorage.setItem(`del:${id}`, delB64u);
+    setIsEncrypting(false);
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 space-y-4">
-      <h1 className="text-2xl font-bold">New Paste</h1>
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <div className="mb-8">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          Create a new paste
+        </h1>
+        <p className="text-sm text-foreground/60 mt-1">
+          End‑to‑end encrypted. Keys never leave your device.
+        </p>
+      </div>
 
-      <label className="flex items-center gap-2">
-        <input
-          type="checkbox"
-          checked={usePassphrase}
-          onChange={(e) => setUsePassphrase(e.target.checked)}
+      <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-background/60 backdrop-blur p-5 shadow-sm">
+        <div className="flex items-center justify-between gap-4 mb-3">
+          <div className="flex items-center gap-3">
+            <label className="inline-flex items-center gap-2 text-sm select-none">
+              <input
+                type="checkbox"
+                className="size-4 rounded border-black/20 dark:border-white/20"
+                checked={usePassphrase}
+                onChange={(e) => setUsePassphrase(e.target.checked)}
+              />
+              Protect with passphrase
+            </label>
+          </div>
+          <button
+            onClick={createPaste}
+            disabled={
+              isEncrypting || !text.trim() || (usePassphrase && !passphrase)
+            }
+            className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black/90 transition"
+          >
+            {isEncrypting ? "Encrypting…" : "Encrypt & Create"}
+          </button>
+        </div>
+
+        {usePassphrase && (
+          <input
+            type="password"
+            className="w-full rounded-md border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10 mb-3"
+            placeholder="Enter passphrase (not sent to server)"
+            value={passphrase}
+            onChange={(e) => setPassphrase(e.target.value)}
+          />
+        )}
+
+        <textarea
+          className="w-full h-72 rounded-lg border border-black/10 dark:border-white/15 bg-transparent p-3 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Type or paste your text here…"
         />
-        <span>Protect with passphrase</span>
-      </label>
-
-      {usePassphrase && (
-        <input
-          type="password"
-          className="w-full border rounded p-2"
-          placeholder="Enter passphrase (not sent to server)"
-          value={passphrase}
-          onChange={(e) => setPassphrase(e.target.value)}
-        />
-      )}
-
-      <textarea
-        className="w-full h-64 border rounded p-3"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Type or paste your text here…"
-      />
-      <button
-        onClick={createPaste}
-        className="px-4 py-2 rounded bg-black text-white"
-      >
-        Encrypt & Create
-      </button>
+      </div>
 
       {link && (
-        <div className="mt-4 space-y-2">
-          <div className="font-mono break-all">{link}</div>
-          {usePassphrase ? (
-            <p className="text-sm text-gray-600">
-              Share the URL **and** the passphrase out-of-band. The server never
-              sees it.
-            </p>
-          ) : (
-            <p className="text-sm text-gray-600">
-              The key is after the <code>#</code> and never leaves the browser.
-            </p>
-          )}
+        <div className="mt-6 rounded-xl border border-black/10 dark:border-white/10 bg-background/60 backdrop-blur p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="font-mono break-all text-sm flex-1 pr-2">
+              {link}
+            </div>
+            <button
+              onClick={async () => {
+                await navigator.clipboard.writeText(link);
+                setCopied("link");
+                setTimeout(() => setCopied(null), 1500);
+              }}
+              className="text-xs rounded-md border border-black/10 dark:border-white/20 px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition"
+            >
+              {copied === "link" ? "Copied" : "Copy link"}
+            </button>
+          </div>
+          <div className="mt-2 text-xs text-foreground/60">
+            {usePassphrase ? (
+              <span>Share the URL and the passphrase out-of-band.</span>
+            ) : (
+              <span>
+                The key is stored after the # and never leaves the browser.
+              </span>
+            )}
+          </div>
           {deleteTokenB64u && (
-            <p className="text-xs text-gray-500">
-              Delete token saved locally. Keep it if you want to delete the
-              paste later.
-            </p>
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <div className="text-xs text-foreground/60 truncate">
+                Delete token saved locally. Keep it to delete later.
+              </div>
+              <button
+                onClick={async () => {
+                  await navigator.clipboard.writeText(deleteTokenB64u);
+                  setCopied("token");
+                  setTimeout(() => setCopied(null), 1500);
+                }}
+                className="text-xs rounded-md border border-black/10 dark:border-white/20 px-2.5 py-1 hover:bg-black/5 dark:hover:bg.white/5 transition"
+              >
+                {copied === "token" ? "Copied" : "Copy delete token"}
+              </button>
+            </div>
           )}
         </div>
       )}

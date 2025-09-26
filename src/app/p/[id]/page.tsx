@@ -24,6 +24,7 @@ export default function PasteView({
   const [err, setErr] = useState<string | null>(null);
   const [passphrase, setPassphrase] = useState("");
   const [needsPass, setNeedsPass] = useState(false);
+  const [copied, setCopied] = useState<"content" | null>(null);
   const { id } = use(params);
 
   useEffect(() => {
@@ -84,39 +85,70 @@ export default function PasteView({
   }
 
   if (err)
-    return <div className="max-w-2xl mx-auto p-6 text-red-600">{err}</div>;
-  if (!meta) return <div className="max-w-2xl mx-auto p-6">Loading…</div>;
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-10">
+        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-red-600">
+          {err}
+        </div>
+      </div>
+    );
+  if (!meta)
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-10 text-foreground/70">
+        Loading…
+      </div>
+    );
 
   if (needsPass && plain === null) {
     return (
-      <div className="max-w-md mx-auto p-6 space-y-3">
-        <h1 className="text-xl font-semibold">Enter Passphrase</h1>
-        <input
-          type="password"
-          className="w-full border rounded p-2"
-          placeholder="Passphrase (never leaves your device)"
-          value={passphrase}
-          onChange={(e) => setPassphrase(e.target.value)}
-        />
-        <button
-          onClick={tryPassphrase}
-          className="px-4 py-2 rounded bg-black text-white"
-        >
-          Decrypt
-        </button>
+      <div className="max-w-md mx-auto px-4 py-12">
+        <div className="rounded-2xl border border-black/10 dark:border-white/10 bg-background/60 backdrop-blur p-5 shadow-sm">
+          <h1 className="text-xl font-semibold mb-3">Enter passphrase</h1>
+          <input
+            type="password"
+            className="w-full rounded-md border border-black/10 dark:border-white/15 bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10 mb-3"
+            placeholder="Passphrase (never leaves your device)"
+            value={passphrase}
+            onChange={(e) => setPassphrase(e.target.value)}
+          />
+          <button
+            onClick={tryPassphrase}
+            className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-black hover:bg-black/90 transition"
+          >
+            Decrypt
+          </button>
+        </div>
       </div>
     );
   }
 
   if (plain === null)
-    return <div className="max-w-2xl mx-auto p-6">Decrypting…</div>;
+    return (
+      <div className="max-w-2xl mx-auto px-4 py-10 text-foreground/70">
+        Decrypting…
+      </div>
+    );
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-xl font-semibold mb-2">
-        {meta.title ?? "Decrypted Paste"}
-      </h1>
-      <pre className="whitespace-pre-wrap rounded border p-3">{plain}</pre>
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {meta.title ?? "Decrypted Paste"}
+        </h1>
+        <button
+          onClick={async () => {
+            await navigator.clipboard.writeText(plain);
+            setCopied("content");
+            setTimeout(() => setCopied(null), 1500);
+          }}
+          className="text-xs rounded-md border border-black/10 dark:border.white/20 px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg.white/5 transition"
+        >
+          {copied === "content" ? "Copied" : "Copy"}
+        </button>
+      </div>
+      <pre className="whitespace-pre-wrap rounded-xl border border-black/10 dark:border-white/10 bg-background/60 backdrop-blur p-4 text-sm">
+        {plain}
+      </pre>
     </div>
   );
 }

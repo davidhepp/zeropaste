@@ -20,7 +20,30 @@
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background-image: radial-gradient(
+      60rem 30rem at 50% -10%,
+      color-mix(in oklab, var(--foreground) 10%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      40rem 20rem at 110% 10%,
+      color-mix(in oklab, var(--foreground) 8%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      30rem 16rem at -10% 10%,
+      color-mix(in oklab, var(--foreground) 6%, transparent),
+      transparent
+    );
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: color-mix(in oklab, var(--foreground) 18%, transparent);
 }
