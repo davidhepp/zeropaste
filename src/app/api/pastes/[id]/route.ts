@@ -3,9 +3,9 @@ import { prisma } from "@/lib/db";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const { id } = await context.params;
   const paste = await prisma.paste.findUnique({ where: { id } });
   if (!paste) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -46,9 +46,9 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
+  const { id } = await context.params;
   const { deleteToken } = await req.json().catch(() => ({}));
   if (!deleteToken)
     return NextResponse.json({ error: "Missing token" }, { status: 400 });
