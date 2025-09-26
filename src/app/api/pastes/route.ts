@@ -14,7 +14,6 @@ export async function POST(req: NextRequest) {
     iterations,
     requirePassphrase,
     title,
-    language,
     expiresAt,
     burnAfterRead,
     maxReads,
