@@ -6,7 +6,7 @@ export default function Header() {
     <header className="sticky top-0 z-10 backdrop-blur supports-[backdrop-filter]:bg-background/70 border-b border-black/5 dark:border-white/10">
       <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="font-semibold tracking-tight">
-          zeropaste
+          zerøpaste
         </Link>
         <nav className="flex items-center gap-3 text-sm">
           <Link
