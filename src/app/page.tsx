@@ -108,7 +108,7 @@ export default function NewPastePage() {
             disabled={
               isEncrypting || !text.trim() || (usePassphrase && !passphrase)
             }
-            className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black/90 transition"
+            className="cursor-pointer inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-black disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black/90 transition"
           >
             {isEncrypting ? "Encrypting…" : "Encrypt & Create"}
           </button>
@@ -144,7 +144,7 @@ export default function NewPastePage() {
                 setCopied("link");
                 setTimeout(() => setCopied(null), 1500);
               }}
-              className="text-xs rounded-md border border-black/10 dark:border-white/20 px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition"
+              className="cursor-pointer text-xs rounded-md border border-black/10 dark:border-white/20 px-2.5 py-1 hover:bg-black/5 dark:hover:bg-white/5 transition"
             >
               {copied === "link" ? "Copied" : "Copy link"}
             </button>
@@ -169,7 +169,7 @@ export default function NewPastePage() {
                   setCopied("token");
                   setTimeout(() => setCopied(null), 1500);
                 }}
-                className="text-xs rounded-md border border-black/10 dark:border-white/20 px-2.5 py-1 hover:bg-black/5 dark:hover:bg.white/5 transition"
+                className="cursor-pointer text-xs rounded-md border border-black/10 dark:border-white/20 px-2.5 py-1 hover:bg-black/5 dark:hover:bg.white/5 transition"
               >
                 {copied === "token" ? "Copied" : "Copy delete token"}
               </button>

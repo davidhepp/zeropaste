@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, use } from "react";
 import { b64u, decryptTextAESGCM, deriveKeyPBKDF2 } from "@/lib/crypto";
+import { HashLoader } from "react-spinners";
 
 type PasteMeta = {
   ciphertext: string;
@@ -52,14 +53,12 @@ export default function PasteView({
           );
           setPlain(text);
         } catch {
-          setErr("Decryption failed. Wrong key or corrupted data.");
+          setErr("Paste not found.");
         }
       } else if (data.requirePassphrase) {
         setNeedsPass(true);
       } else {
-        setErr(
-          "Missing key (#fragment) and this paste is not passphrase-protected."
-        );
+        setErr("Paste not found.");
       }
     })();
   }, [id]);
@@ -68,7 +67,7 @@ export default function PasteView({
     if (!meta) return;
     try {
       if (!meta.kdf || !meta.salt || !meta.iterations) {
-        setErr("Missing KDF parameters.");
+        setErr("Paste not found.");
         return;
       }
       const rawKey = await deriveKeyPBKDF2(
@@ -80,7 +79,7 @@ export default function PasteView({
       setPlain(text);
       setErr(null);
     } catch {
-      setErr("Decryption failed. Wrong passphrase or corrupted data.");
+      setErr("Paste not found.");
     }
   }
 
@@ -94,8 +93,8 @@ export default function PasteView({
     );
   if (!meta)
     return (
-      <div className="max-w-2xl mx-auto px-4 py-10 text-foreground/70">
-        Loading…
+      <div className="max-w-2xl mx-auto px-4 py-10 flex items-center justify-center">
+        <HashLoader color="#fff" />
       </div>
     );
 
@@ -133,7 +132,7 @@ export default function PasteView({
     <div className="max-w-3xl mx-auto px-4 py-10">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">
-          {meta.title ?? "Decrypted Paste"}
+          {meta.title ?? id}
         </h1>
         <button
           onClick={async () => {
@@ -141,12 +140,12 @@ export default function PasteView({
             setCopied("content");
             setTimeout(() => setCopied(null), 1500);
           }}
-          className="text-xs rounded-md border border-black/10 dark:border.white/20 px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg.white/5 transition"
+          className="cursor-pointer text-xs rounded-md border border-black/10 dark:border.white/20 px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg.white/5 transition"
         >
           {copied === "content" ? "Copied" : "Copy"}
         </button>
       </div>
-      <pre className="whitespace-pre-wrap rounded-xl border border-black/10 dark:border-white/10 bg-background/60 backdrop-blur p-4 text-sm">
+      <pre className="whitespace-pre-wrap break-words rounded-xl border border-black/10 dark:border-white/10 bg-background/60 backdrop-blur p-4 text-sm">
         {plain}
       </pre>
     </div>
