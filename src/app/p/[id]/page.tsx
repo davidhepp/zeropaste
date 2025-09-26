@@ -112,7 +112,7 @@ export default function PasteView({
           />
           <button
             onClick={tryPassphrase}
-            className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-black hover:bg-black/90 transition"
+            className="cursor-pointer inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-black hover:bg-black/90 transition"
           >
             Decrypt
           </button>
@@ -124,7 +124,7 @@ export default function PasteView({
   if (plain === null)
     return (
       <div className="max-w-2xl mx-auto px-4 py-10 text-foreground/70">
-        Decrypting…
+        <HashLoader color="#fff" />
       </div>
     );
 
@@ -140,7 +140,7 @@ export default function PasteView({
             setCopied("content");
             setTimeout(() => setCopied(null), 1500);
           }}
-          className="cursor-pointer text-xs rounded-md border border-black/10 dark:border.white/20 px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg.white/5 transition"
+          className="cursor-pointer hover:underline text-xs rounded-md border border-black/10 dark:border.white/20 px-2.5 py-1.5 hover:bg-black/5 dark:hover:bg.white/5 transition"
         >
           {copied === "content" ? "Copied" : "Copy"}
         </button>

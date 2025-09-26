@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   generateRandomKey,
   encryptTextAESGCM,
@@ -13,9 +13,11 @@ export default function NewPastePage() {
   const [usePassphrase, setUsePassphrase] = useState(false);
   const [passphrase, setPassphrase] = useState("");
   const [link, setLink] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [deleteTokenB64u, setDeleteTokenB64u] = useState<string | null>(null);
   const [isEncrypting, setIsEncrypting] = useState(false);
   const [copied, setCopied] = useState<"link" | "token" | null>(null);
+  const linkSectionRef = useRef<HTMLDivElement>(null);
 
   async function createPaste() {
     if (!text.trim()) return;
@@ -80,6 +82,14 @@ export default function NewPastePage() {
 
     localStorage.setItem(`del:${id}`, delB64u);
     setIsEncrypting(false);
+
+    // Scroll to the newly created link section smoothly
+    setTimeout(() => {
+      linkSectionRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
   }
 
   return (
@@ -133,7 +143,10 @@ export default function NewPastePage() {
       </div>
 
       {link && (
-        <div className="mt-6 rounded-xl border border-black/10 dark:border-white/10 bg-background/60 backdrop-blur p-4">
+        <div
+          ref={linkSectionRef}
+          className="mt-6 rounded-xl border border-black/10 dark:border-white/10 bg-background/60 backdrop-blur p-4"
+        >
           <div className="flex items-center justify-between gap-3">
             <div className="font-mono break-all text-sm flex-1 pr-2">
               {link}
@@ -158,7 +171,7 @@ export default function NewPastePage() {
               </span>
             )}
           </div>
-          {deleteTokenB64u && (
+          {/* {deleteTokenB64u && (
             <div className="mt-3 flex items-center justify-between gap-3">
               <div className="text-xs text-foreground/60 truncate">
                 Delete token saved locally. Keep it to delete later.
@@ -174,7 +187,7 @@ export default function NewPastePage() {
                 {copied === "token" ? "Copied" : "Copy delete token"}
               </button>
             </div>
-          )}
+          )} */}
         </div>
       )}
     </div>
