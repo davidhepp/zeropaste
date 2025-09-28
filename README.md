@@ -1,4 +1,4 @@
-# zeropaste - A Zero-Knowledge Pastebin
+# [zeropaste](https://paste.dasky.dev/) - A Zero-Knowledge Pastebin
 
 A simple but sleek **encrypted pastebin** built with **Next.js** with the zero-knowledge principle.
 All encryption and decryption happens client-side and the server never sees keys and plaintext.
